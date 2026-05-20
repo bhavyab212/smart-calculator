@@ -42,11 +42,11 @@ export function Display() {
   const lastResult = history[0];
 
   return (
-    <div className="lcd-screen rounded-lg p-3 mx-2 mb-2 min-h-[110px] flex flex-col justify-between relative z-10">
+    <div className="w-full flex flex-col justify-end">
       {/* Previous answer line */}
       <div className="text-right min-h-[18px]">
         {lastResult && !expression && (
-          <span className="lcd-text-dim text-xs font-mono opacity-60">
+          <span className="font-display-input text-xs text-primary-fixed-dim opacity-60">
             Ans = {lastResult.result}
           </span>
         )}
@@ -55,7 +55,7 @@ export function Display() {
       {/* Expression input line */}
       <div
         ref={exprRef}
-        className="expr-display overflow-x-auto whitespace-nowrap py-1 min-h-[28px] flex items-center"
+        className="font-display-input text-[28px] leading-none mb-4 lcd-glow text-primary-fixed tracking-tight overflow-x-auto whitespace-nowrap py-1 min-h-[36px] flex items-center"
         style={{ scrollbarWidth: 'none' }}
       >
         {renderExpression()}
@@ -63,13 +63,12 @@ export function Display() {
 
       {/* Result line */}
       <div
-        className={`expr-result min-h-[32px] flex items-center justify-end transition-all duration-150 ${
-          isError ? 'text-red-400' : ''
+        className={`font-display-result text-[36px] font-medium tracking-tight min-h-[40px] flex items-center justify-end transition-all duration-150 ${
+          isError ? 'text-error lcd-glow' : 'text-primary lcd-glow'
         }`}
-        style={isError ? { color: '#ff6b6b', textShadow: '0 0 8px rgba(255,100,100,0.4)' } : {}}
       >
         {result && (
-          <span className={`${isError ? 'text-base' : 'text-2xl'}`}>
+          <span>
             {result}
           </span>
         )}

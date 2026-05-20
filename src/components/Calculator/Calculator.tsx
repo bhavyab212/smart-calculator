@@ -59,52 +59,53 @@ export function Calculator() {
   const { activeMenu } = useCalcStore();
 
   return (
-    <div className="relative" style={{ width: '340px' }}>
-      {/* Calculator body */}
-      <div className="calc-body flex flex-col" style={{ minHeight: '580px' }}>
-        {/* Top brand strip */}
-        <div
-          className="flex items-center justify-between px-3 py-1.5 rounded-t-2xl"
-          style={{
-            background: 'linear-gradient(90deg, #0a1628 0%, #0d1f3c 50%, #0a1628 100%)',
-            borderBottom: '1px solid rgba(255,255,255,0.05)',
-          }}
-        >
-          <div>
-            <div className="text-white font-bold text-[10px] tracking-[0.2em] uppercase">CASIO</div>
-            <div className="text-blue-400 font-mono text-[8px] tracking-widest">fx-991CW</div>
-          </div>
-          <div className="text-right">
-            <div className="text-gray-500 text-[8px]">ClassWiz</div>
-            <div className="text-gray-600 text-[7px]">Advanced</div>
+    <div className="w-full max-w-[480px] mx-auto bg-surface-container-lowest border border-outline-variant/30 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+      {/* Subtle Hardware Texture Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-surface-container-high/20 to-transparent pointer-events-none"></div>
+      
+      {/* Top App Bar (Re-imagined as Hardware Branding/Status) */}
+      <div className="flex justify-between items-center mb-6 relative z-10 border-b border-outline-variant/30 pb-2">
+        <div className="font-display-input text-[24px] font-bold text-primary-fixed tracking-tighter">CASIO</div>
+        <div className="flex items-center gap-4">
+          <span className="font-label-status text-label-status uppercase tracking-widest text-primary-fixed-dim">fx-991CW</span>
+          <div className="flex gap-2">
+            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">settings</span>
+            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">info</span>
           </div>
         </div>
+      </div>
 
-        {/* LCD Panel */}
-        <div className="relative mx-2 mt-2">
+      {/* LCD Panel */}
+      <div className="bg-gradient-to-b from-[#1a2e30] to-[#0d1415] rounded-xl border border-[#3a494b]/50 p-display-padding mb-6 relative shadow-inner overflow-hidden flex flex-col min-h-[220px]">
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 bg-lcd-grid" style={{ backgroundSize: '4px 4px' }}></div>
+        
+        {/* Status Indicators */}
+        <div className="relative z-10 w-full mb-2">
           <StatusBar />
-          {/* App-specific content inside LCD */}
-          <div className="lcd-screen rounded-b-none border-t-0 px-1 pb-1 min-h-[90px]">
-            <ActiveApp />
-          </div>
-          {/* Expression + Result display */}
+        </div>
+        
+        {/* App-specific content inside LCD */}
+        <div className="relative z-10 flex-1 w-full text-primary-fixed">
+          <ActiveApp />
+        </div>
+        
+        {/* Expression + Result display */}
+        <div className="relative z-10 w-full mt-2">
           <Display />
         </div>
+      </div>
 
-        {/* Keypad */}
-        <div className="mt-1 flex-1">
-          <KeypadLayout />
-        </div>
+      {/* Keypad */}
+      <div className="relative z-10">
+        <KeypadLayout />
+      </div>
 
-        {/* Bottom label strip */}
-        <div
-          className="text-center py-1 rounded-b-2xl"
-          style={{ background: 'rgba(0,0,0,0.3)' }}
-        >
-          <span className="text-gray-700 text-[8px] font-mono tracking-widest">
-            NATURAL-VPAM • NON-PROG
-          </span>
-        </div>
+      {/* Bottom label strip */}
+      <div className="relative z-10 text-center pt-4 pb-1">
+        <span className="text-outline-variant text-[10px] font-display-input tracking-widest">
+          NATURAL-VPAM • CLASSWIZ
+        </span>
       </div>
 
       {/* Menus (absolute overlays) */}

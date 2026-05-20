@@ -37,7 +37,6 @@ export function CalcKey({
     if (onPress) {
       onPress();
     } else {
-      // Determine what to insert based on modifier state
       if (shiftState === 'shift' && shift) {
         insertAtCursor(shift);
         setShiftState('none');
@@ -50,13 +49,33 @@ export function CalcKey({
     }
   }, [disabled, onPress, shiftState, shift, alpha, main, insertAtCursor, setShiftState]);
 
-  const typeClass = `key-${type}`;
-  const heightClass = tall ? 'h-10' : 'h-8';
-  const widthClass = wide ? 'flex-[2]' : 'flex-1';
+  // Determine styles based on key type
+  let bgClass = "bg-surface-container-high/50 hover:bg-surface-container-highest border-outline-variant/30 text-on-surface";
+  let radiusClass = "rounded-[16px]";
+  let extraClasses = "";
+  
+  if (type === 'op' || type === 'fn') {
+    bgClass = "bg-surface-variant/70 hover:bg-surface-container-high border-outline-variant/50 text-primary-fixed-dim";
+  } else if (type === 'shift') {
+    bgClass = "bg-surface-variant/70 hover:bg-surface-container-high border-outline-variant/50 text-[#bf00ff]"; // Electric Purple
+    radiusClass = "rounded-full";
+  } else if (type === 'alpha') {
+    bgClass = "bg-surface-variant/70 hover:bg-surface-container-high border-outline-variant/50 text-primary-fixed";
+    radiusClass = "rounded-full";
+  } else if (type === 'del' || type === 'system') {
+    bgClass = "bg-[#3a1b1b] hover:bg-[#4a2222] border-[#5a2a2a]/50 text-[#ff8080]";
+    radiusClass = "rounded-full";
+  } else if (type === 'exe') {
+    bgClass = "bg-primary-container hover:bg-primary-fixed border-primary/50 text-on-primary-container";
+    extraClasses = "shadow-glow-primary font-bold";
+  }
+
+  const heightClass = tall ? 'h-[76px]' : 'h-[46px]';
+  const widthClass = wide ? 'flex-[2]' : 'flex-[1]';
 
   return (
     <div
-      className={`calc-key ${typeClass} ${heightClass} ${widthClass} ${pressed ? 'pressed' : ''} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+      className={`btn-glass ${bgClass} ${radiusClass} ${extraClasses} border shadow-inner-glass flex items-center justify-center relative cursor-pointer select-none ${heightClass} ${widthClass} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
       onMouseDown={handlePress}
       onTouchStart={(e) => { e.preventDefault(); handlePress(); }}
       role="button"
@@ -64,30 +83,30 @@ export function CalcKey({
       tabIndex={disabled ? -1 : 0}
       onKeyDown={(e) => e.key === 'Enter' && handlePress()}
     >
-      {/* SHIFT label row */}
+      {/* SHIFT/ALPHA label row */}
       {(shift || alpha) && (
-        <div className="absolute top-[2px] left-0 right-0 flex justify-between px-[3px]">
-          {shift ? (
+        <div className="absolute top-[-16px] left-0 right-0 flex justify-center gap-2 px-[4px]">
+          {shift && (
             <span
-              className={`key-label-shift leading-none transition-opacity duration-100 ${shiftState === 'shift' ? 'opacity-100' : 'opacity-50'}`}
-              style={{ fontSize: '7px' }}
+              className={`font-keypad-secondary text-[9px] tracking-wide transition-opacity duration-100 ${shiftState === 'shift' ? 'opacity-100 font-bold' : 'opacity-70'}`}
+              style={{ color: '#bf00ff' }}
             >
               {shift}
             </span>
-          ) : <span />}
-          {alpha ? (
+          )}
+          {alpha && (
             <span
-              className={`key-label-alpha leading-none transition-opacity duration-100 ${shiftState === 'alpha' ? 'opacity-100' : 'opacity-50'}`}
-              style={{ fontSize: '7px' }}
+              className={`font-keypad-secondary text-[9px] tracking-wide transition-opacity duration-100 ${shiftState === 'alpha' ? 'opacity-100 font-bold' : 'opacity-70'}`}
+              style={{ color: '#00f2ff' }}
             >
               {alpha}
             </span>
-          ) : <span />}
+          )}
         </div>
       )}
 
       {/* Main label */}
-      <span className={`key-label-main text-${mainSize}`}>
+      <span className={`font-keypad-primary pointer-events-none ${mainSize === 'xs' ? 'text-[12px]' : mainSize === 'sm' ? 'text-[16px]' : mainSize === 'lg' ? 'text-[22px]' : 'text-[18px]'}`}>
         {main}
       </span>
     </div>

@@ -60,11 +60,11 @@ export function KeypadLayout() {
 
   // ── Key Row helper ───────────────────────────────────────────────────────────
   const row = (keys: React.ReactNode) => (
-    <div className="flex gap-1">{keys}</div>
+    <div className="flex gap-3">{keys}</div>
   );
 
   return (
-    <div className="flex flex-col gap-1 px-2 pb-2">
+    <div className="flex flex-col gap-4 pb-2">
       {/* ── ROW 1: Special / Menu row ── */}
       {row(<>
         <CalcKey main="MENU" type="system" mainSize="xs" onPress={openMenu('home')} />
