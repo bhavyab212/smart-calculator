@@ -76,7 +76,7 @@ export function Calculator() {
       </div>
 
       {/* LCD Panel */}
-      <div className="bg-gradient-to-b from-[#1a2e30] to-[#0d1415] rounded-xl border border-[#3a494b]/50 p-display-padding mb-6 relative shadow-inner overflow-hidden flex flex-col min-h-[220px]">
+      <div className="lcd-screen bg-gradient-to-b from-[#1a2e30] to-[#0d1415] rounded-xl border border-[#3a494b]/50 p-display-padding mb-6 relative shadow-inner overflow-hidden flex flex-col min-h-[220px]">
         {/* Grid Pattern */}
         <div className="absolute inset-0 bg-lcd-grid" style={{ backgroundSize: '4px 4px' }}></div>
         
