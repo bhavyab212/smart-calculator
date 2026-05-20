@@ -11,29 +11,32 @@ const APP_LABELS: Record<string, string> = {
 };
 
 export function StatusBar() {
-  const { angleUnit, shiftState, memory, activeApp, displayFormat } = useCalcStore();
+  const { angleUnit, shiftState, memory, displayFormat } = useCalcStore();
 
   return (
-    <div className="flex items-center justify-between px-2 py-1 text-xs font-mono select-none"
-         style={{ color: 'var(--lcd-dim)', borderBottom: '1px solid rgba(100,200,50,0.15)' }}>
+    <div className="flex items-center justify-between px-2 py-0.5 text-[10px] font-mono select-none text-[#4b5e4d] border-b border-[#4b5e4d]/20">
       {/* Left: mode indicators */}
-      <div className="flex items-center gap-1">
-        <span className={`status-indicator ${shiftState === 'shift' ? 'active' : ''}`}>S</span>
-        <span className={`status-indicator ${shiftState === 'alpha' ? 'active' : ''}`}>A</span>
-        <span className={`status-indicator ${memory !== 0 ? 'active' : ''}`}>M</span>
+      <div className="flex items-center gap-2">
+        <span className={`px-0.5 rounded font-bold border transition-colors ${
+          shiftState === 'shift' ? 'bg-[#121c12] text-white border-[#121c12]' : 'border-transparent opacity-30'
+        }`}>S</span>
+        <span className={`px-0.5 rounded font-bold border transition-colors ${
+          shiftState === 'alpha' ? 'bg-[#121c12] text-white border-[#121c12]' : 'border-transparent opacity-30'
+        }`}>A</span>
+        <span className={`px-0.5 rounded font-bold border transition-colors ${
+          memory !== 0 ? 'bg-[#121c12] text-white border-[#121c12]' : 'border-transparent opacity-30'
+        }`}>M</span>
+        
+        {/* QR Code and App grid icon simulator */}
+        <span className="material-symbols-outlined text-[10px] opacity-70">qr_code_2</span>
+        <span className="material-symbols-outlined text-[10px] opacity-70">grid_view</span>
       </div>
 
-      {/* Center: app name */}
-      <span className="lcd-text-dim font-bold tracking-widest text-[10px]">
-        {APP_LABELS[activeApp] || 'CALCULATE'}
-      </span>
-
-      {/* Right: angle + format */}
-      <div className="flex items-center gap-1">
-        <span className="status-indicator active">{angleUnit}</span>
-        {displayFormat !== 'std' && (
-          <span className="status-indicator">{displayFormat.toUpperCase()}</span>
-        )}
+      {/* Right: angle + display mode format */}
+      <div className="flex items-center gap-2 font-bold">
+        <span>{angleUnit}</span>
+        <span className="opacity-90">Math</span>
+        <span className="text-[8px]">▲</span>
       </div>
     </div>
   );

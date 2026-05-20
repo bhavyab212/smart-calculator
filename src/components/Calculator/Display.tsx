@@ -42,11 +42,11 @@ export function Display() {
   const lastResult = history[0];
 
   return (
-    <div className="w-full flex flex-col justify-end">
+    <div className="w-full flex flex-col justify-end select-none font-sans">
       {/* Previous answer line */}
-      <div className="text-right min-h-[18px]">
+      <div className="text-right min-h-[16px] text-[10px] text-[#4b5e4d]/80 font-mono">
         {lastResult && !expression && (
-          <span className="font-display-input text-xs text-primary-fixed-dim opacity-60">
+          <span>
             Ans = {lastResult.result}
           </span>
         )}
@@ -55,7 +55,7 @@ export function Display() {
       {/* Expression input line */}
       <div
         ref={exprRef}
-        className="font-display-input text-[28px] leading-none mb-4 lcd-glow text-primary-fixed tracking-tight overflow-x-auto whitespace-nowrap py-1 min-h-[36px] flex items-center"
+        className="font-mono text-lg font-bold leading-none mb-3 text-[#121c12] tracking-wide overflow-x-auto whitespace-nowrap py-1 min-h-[28px] flex items-center"
         style={{ scrollbarWidth: 'none' }}
       >
         {renderExpression()}
@@ -63,15 +63,21 @@ export function Display() {
 
       {/* Result line */}
       <div
-        className={`font-display-result text-[36px] font-medium tracking-tight min-h-[40px] flex items-center justify-end transition-all duration-150 ${
-          isError ? 'text-error lcd-glow' : 'text-primary lcd-glow'
-        }`}
+        className={`font-mono text-2xl font-bold tracking-wide min-h-[36px] flex items-center justify-end transition-all duration-150 text-[#121c12]`}
       >
         {result && (
           <span>
             {result}
           </span>
         )}
+      </div>
+
+      {/* LCD Bottom Soft Keys */}
+      <div className="grid grid-cols-4 gap-1.5 mt-3 pt-1 border-t border-[#4b5e4d]/20 text-[9px] font-bold text-white tracking-wider select-none font-mono">
+        <div className="bg-[#121c12] rounded px-1 py-0.5 text-center text-gray-300">JUMP</div>
+        <div className="bg-[#121c12] rounded px-1 py-0.5 text-center text-gray-300">DELETE</div>
+        <div className="bg-[#121c12] rounded px-1 py-0.5 text-center text-gray-300">MAT/VCT</div>
+        <div className="bg-[#121c12] rounded px-1 py-0.5 text-center text-gray-300">MATH</div>
       </div>
     </div>
   );

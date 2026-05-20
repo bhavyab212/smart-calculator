@@ -2,10 +2,7 @@ import React from 'react';
 import { CalcKey } from './CalcKey';
 import { useCalcStore } from '../../state/useCalcStore';
 import { evaluate } from '../../engine/evaluator';
-
-// ── Full FX-991CW Keypad Layout ───────────────────────────────────────────────
-// 5 rows of function keys + 5 rows of main keys
-// Each row is a flex container with gap
+import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
 
 export function KeypadLayout() {
   const store = useCalcStore();
@@ -25,156 +22,314 @@ export function KeypadLayout() {
     }
   };
 
-  const openMenu = (menu: 'home' | 'catalog' | 'format' | 'settings') =>
-    () => store.setActiveMenu(menu);
+  const openMenu = (menu: 'home' | 'catalog' | 'format' | 'settings' | 'tools') =>
+    () => store.setActiveMenu(store.activeMenu === menu ? null : menu as any);
 
   const insertFn = (fn: string) => () => store.insertAtCursor(fn);
   const insertStr = (s: string) => () => store.insertAtCursor(s);
 
-  const toggleAngle = () => {
-    const units = ['DEG', 'RAD', 'GRAD'] as const;
-    const idx = units.indexOf(store.angleUnit);
-    store.setAngleUnit(units[(idx + 1) % 3]);
-  };
-
-  const memStore = () => {
-    const val = parseFloat(store.result) || 0;
-    store.setMemory(val);
-    store.setVariable('M', val);
-  };
-  const memRecall = () => store.insertAtCursor('M');
-  const memPlus = () => {
-    const val = parseFloat(store.result) || 0;
-    store.memoryAdd(val);
-  };
-  const memMinus = () => {
-    const val = parseFloat(store.result) || 0;
-    store.memorySub(val);
-  };
-
-  const ansKey = () => store.insertAtCursor('Ans');
-  const preAnsKey = () => store.insertAtCursor('PreAns');
-
   const delKey = () => store.deleteAtCursor();
   const acKey = () => store.clearExpression();
 
-  // ── Key Row helper ───────────────────────────────────────────────────────────
-  const row = (keys: React.ReactNode) => (
-    <div className="flex gap-3">{keys}</div>
-  );
+  const handleArrow = (dir: 'left' | 'right' | 'up' | 'down') => {
+    const { cursorPos, expression } = store;
+    if (dir === 'left') {
+      store.setCursorPos(Math.max(0, cursorPos - 1));
+    } else if (dir === 'right') {
+      store.setCursorPos(Math.min(expression.length, cursorPos + 1));
+    } else if (dir === 'up') {
+      store.setCursorPos(0);
+    } else if (dir === 'down') {
+      store.setCursorPos(expression.length);
+    }
+  };
+
+  const ansKey = () => store.insertAtCursor('Ans');
 
   return (
-    <div className="flex flex-col gap-4 pb-2">
-      {/* ── ROW 1: Special / Menu row ── */}
-      {row(<>
-        <CalcKey main="MENU" type="system" mainSize="xs" onPress={openMenu('home')} />
-        <CalcKey main="TOOLS" type="system" mainSize="xs" onPress={openMenu('settings')} />
-        <CalcKey main="CAT" type="fn" shift="i" alpha="A" mainSize="xs" onPress={openMenu('catalog')} />
-        <CalcKey main="CALC" type="fn" shift="∫dx" alpha="B" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('∫(') : undefined} />
-        <CalcKey main="d/dx" type="fn" shift="Σ" alpha="C" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('Σ(') : insertFn('d/dx(')} />
-        <CalcKey main="OPTN" type="fn" mainSize="xs" onPress={openMenu('format')} />
-      </>)}
+    <div className="flex flex-col gap-3 pb-2 font-sans select-none text-white">
+      {/* ── SECTION 1: D-PAD & CONTROL BUTTONS ── */}
+      <div className="flex justify-between items-center px-1">
+        {/* Left Side Controls: ON, HOME, SETTINGS, BACK */}
+        <div className="flex flex-col gap-2 w-[76px]">
+          <div className="grid grid-cols-2 text-center text-[6px] font-bold text-gray-500 font-mono tracking-tighter">
+            <div>ON</div>
+            <div>HOME</div>
+          </div>
+          <div className="flex gap-2">
+            {/* ON Button */}
+            <button 
+              onClick={acKey}
+              className="w-8 h-8 rounded-full bg-[#242b35] border border-[#384352]/50 hover:bg-[#2d3642] flex items-center justify-center text-[8px] font-bold text-white shadow-md active:scale-95 transition-transform"
+              title="ON"
+            >
+              ON
+            </button>
+            {/* HOME Button */}
+            <button 
+              onClick={openMenu('home')}
+              className="w-8 h-8 rounded-full bg-[#171c24] border border-[#293240]/40 hover:bg-[#202732] flex items-center justify-center text-gray-300 shadow-md active:scale-95 transition-transform"
+              title="HOME"
+            >
+              <span className="material-symbols-outlined text-[14px]">home</span>
+            </button>
+          </div>
+          <div className="grid grid-cols-2 text-center text-[6px] font-bold text-gray-500 font-mono tracking-tighter">
+            <div>SETTINGS</div>
+            <div>BACK</div>
+          </div>
+          <div className="flex gap-2">
+            {/* SETTINGS Button */}
+            <button 
+              onClick={openMenu('settings')}
+              className="w-8 h-8 rounded-full bg-[#171c24] border border-[#293240]/40 hover:bg-[#202732] flex items-center justify-center text-gray-300 shadow-md active:scale-95 transition-transform"
+              title="SETTINGS"
+            >
+              <span className="material-symbols-outlined text-[14px]">settings</span>
+            </button>
+            {/* BACK Button */}
+            <button 
+              onClick={() => store.setActiveMenu(null)}
+              className="w-8 h-8 rounded-full bg-[#171c24] border border-[#293240]/40 hover:bg-[#202732] flex items-center justify-center text-gray-300 shadow-md active:scale-95 transition-transform"
+              title="BACK"
+            >
+              <RotateCcw size={12} />
+            </button>
+          </div>
+        </div>
 
-      {/* ── ROW 2: Trig / Hyp row ── */}
-      {row(<>
-        <CalcKey main="sin" type="fn" shift="sin⁻¹" alpha="D" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('asin(') : insertFn('sin(')} />
-        <CalcKey main="cos" type="fn" shift="cos⁻¹" alpha="E" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('acos(') : insertFn('cos(')} />
-        <CalcKey main="tan" type="fn" shift="tan⁻¹" alpha="F" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('atan(') : insertFn('tan(')} />
-        <CalcKey main="ANGLE" type="system" mainSize="xs" onPress={toggleAngle} />
-        <CalcKey main="hyp" type="fn" shift="π" alpha="G" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('π') : insertFn('sinh(')} />
-        <CalcKey main="%" type="fn" shift="e" alpha="H" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('e') : insertStr('%')} />
-      </>)}
+        {/* Center: Circular D-Pad */}
+        <div className="relative w-28 h-28 rounded-full bg-gradient-to-b from-[#1e2530] to-[#0d1017] border border-[#2d3848] flex items-center justify-center shadow-lg select-none">
+          {/* OK button in the center */}
+          <button 
+            onClick={executeCalc}
+            className="w-10 h-10 rounded-full bg-[#1c222b] border border-[#374558] hover:bg-[#252e3b] text-white flex items-center justify-center text-[10px] font-bold shadow-inner cursor-pointer active:scale-95 transition-transform"
+          >
+            OK
+          </button>
+          
+          {/* Arrow navigation buttons */}
+          <button 
+            onClick={() => handleArrow('up')}
+            className="absolute top-1 left-[38px] w-9 h-6 hover:text-white text-gray-400 flex items-center justify-center transition-colors"
+            title="Up"
+          >
+            <ArrowUp size={12} />
+          </button>
+          <button 
+            onClick={() => handleArrow('down')}
+            className="absolute bottom-1 left-[38px] w-9 h-6 hover:text-white text-gray-400 flex items-center justify-center transition-colors"
+            title="Down"
+          >
+            <ArrowDown size={12} />
+          </button>
+          <button 
+            onClick={() => handleArrow('left')}
+            className="absolute left-1 top-[38px] w-6 h-9 hover:text-white text-gray-400 flex items-center justify-center transition-colors"
+            title="Left"
+          >
+            <ArrowLeft size={12} />
+          </button>
+          <button 
+            onClick={() => handleArrow('right')}
+            className="absolute right-1 top-[38px] w-6 h-9 hover:text-white text-gray-400 flex items-center justify-center transition-colors"
+            title="Right"
+          >
+            <ArrowRight size={12} />
+          </button>
+        </div>
 
-      {/* ── ROW 3: Log / Exp row ── */}
-      {row(<>
-        <CalcKey main="log" type="fn" shift="10^x" alpha="I" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('10^(') : insertFn('log(')} />
-        <CalcKey main="ln" type="fn" shift="e^x" alpha="J" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('exp(') : insertFn('ln(')} />
-        <CalcKey main="√" type="fn" shift="x²" alpha="K" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('^2') : insertFn('sqrt(')} />
-        <CalcKey main="x^y" type="fn" shift="ˣ√" alpha="L" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('nthRoot(') : insertStr('^')} />
-        <CalcKey main="x⁻¹" type="fn" shift="x!" alpha="M" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('!') : insertFn('^(-1)')} />
-        <CalcKey main="FRAC" type="fn" shift="a b/c" alpha="N" mainSize="xs"
-          onPress={insertFn('(')} />
-      </>)}
+        {/* Right Side Controls: SHIFT, ALPHA, MENU, x Variable */}
+        <div className="flex flex-col gap-2 w-[76px] items-end">
+          <div className="grid grid-cols-2 text-center text-[6px] font-bold text-gray-500 font-mono tracking-tighter w-full">
+            <div><span className="text-[#d97706]">π</span></div>
+            <div></div>
+          </div>
+          <div className="flex gap-2">
+            {/* SHIFT Button */}
+            <button 
+              onClick={() => store.toggleShift()}
+              className={`w-8 h-8 rounded-full border flex items-center justify-center text-[8px] font-bold shadow-md transition-all active:scale-95 ${
+                store.shiftState === 'shift'
+                  ? 'bg-[#d97706] border-[#d97706] text-black shadow-[0_0_8px_rgba(217,119,6,0.5)] font-extrabold'
+                  : 'bg-[#0b0f17] border-[#d97706]/60 text-[#d97706]'
+              }`}
+              title="SHIFT"
+            >
+              SHIFT
+            </button>
+            {/* ALPHA Button */}
+            <button 
+              onClick={() => store.toggleAlpha()}
+              className={`w-8 h-8 rounded-full border flex items-center justify-center text-[8px] font-bold shadow-md transition-all active:scale-95 ${
+                store.shiftState === 'alpha'
+                  ? 'bg-[#d946ef] border-[#d946ef] text-black shadow-[0_0_8px_rgba(217,70,239,0.5)] font-extrabold'
+                  : 'bg-[#0b0f17] border-[#d946ef]/60 text-[#d946ef]'
+              }`}
+              title="ALPHA"
+            >
+              ALPHA
+            </button>
+          </div>
+          <div className="grid grid-cols-2 text-center text-[6px] font-bold text-gray-500 font-mono tracking-tighter w-full">
+            <div>MENU</div>
+            <div>VARIABLE</div>
+          </div>
+          <div className="flex gap-2">
+            {/* MENU Button */}
+            <button 
+              onClick={openMenu('home')}
+              className="w-8 h-8 rounded-full bg-[#171c24] border border-[#293240]/40 hover:bg-[#202732] flex items-center justify-center text-gray-300 shadow-md active:scale-95 transition-transform"
+              title="MENU"
+            >
+              <span className="material-symbols-outlined text-[14px]">more_horiz</span>
+            </button>
+            {/* x variable Button */}
+            <button 
+              onClick={insertStr('x')}
+              className="w-8 h-8 rounded-full bg-[#171c24] border border-[#293240]/40 hover:bg-[#202732] flex items-center justify-center text-[#d946ef] font-semibold text-xs shadow-md active:scale-95 transition-transform"
+              title="x Variable"
+            >
+              x
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {/* ── ROW 4: Memory / Stat row ── */}
-      {row(<>
-        <CalcKey main="STO→" type="fn" shift="RCL" alpha="O" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? memRecall : memStore} />
-        <CalcKey main="M+" type="fn" shift="M-" alpha="P" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? memMinus : memPlus} />
-        <CalcKey main="nPr" type="fn" shift="nCr" alpha="Q" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn(' nCr ') : insertFn(' nPr ')} />
-        <CalcKey main="Pol" type="fn" shift="Rec" alpha="R" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('Rec(') : insertFn('Pol(')} />
-        <CalcKey main="GCD" type="fn" shift="LCM" alpha="S" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('lcm(') : insertFn('gcd(')} />
-        <CalcKey main="Rnd" type="fn" shift="Ran#" alpha="T" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? insertFn('Ran#') : insertFn('round(')} />
-      </>)}
+      {/* ── SECTION 2: 4 PRIMARY SYSTEM FUNCTION KEYS ── */}
+      <div className="flex flex-col gap-0.5">
+        <div className="grid grid-cols-4 gap-2.5 text-center text-[7px] font-bold text-gray-500 font-mono tracking-wide">
+          <div>VARIABLE</div>
+          <div>FUNCTION</div>
+          <div>CATALOG</div>
+          <div>TOOLS</div>
+        </div>
+        <div className="grid grid-cols-4 gap-2.5">
+          <CalcKey main="x" type="fn" onPress={openMenu('catalog')} />
+          <CalcKey main="f(x)" type="fn" onPress={insertFn('f(')} />
+          <CalcKey main="CATALOG" type="fn" mainSize="xs" onPress={openMenu('catalog')} />
+          <CalcKey main="TOOLS" type="fn" mainSize="xs" onPress={openMenu('format')} />
+        </div>
+      </div>
 
-      {/* ── ROW 5: SHIFT / ALPHA / Control ── */}
-      {row(<>
-        <CalcKey main="SHIFT" type="shift" mainSize="xs"
-          onPress={() => store.toggleShift()} />
-        <CalcKey main="ALPHA" type="alpha" mainSize="xs"
-          onPress={() => store.toggleAlpha()} />
-        <CalcKey main="←" type="system" mainSize="sm"
-          onPress={() => store.setCursorPos(Math.max(0, store.cursorPos - 1))} />
-        <CalcKey main="→" type="system" mainSize="sm"
-          onPress={() => store.setCursorPos(Math.min(store.expression.length, store.cursorPos + 1))} />
-        <CalcKey main="DEL" type="del" mainSize="xs" onPress={delKey} />
-        <CalcKey main="AC" type="del" shift="OFF" mainSize="xs" onPress={acKey} />
-      </>)}
+      {/* ── SECTION 3: TRIG & LOG SCIENTIFIC KEYS ── */}
+      <div className="flex flex-col gap-0.5">
+        <div className="grid grid-cols-6 gap-2 text-center text-[7px] font-mono leading-none">
+          <div className="flex justify-center gap-1"><span className="text-[#d97706]">x!</span><span className="text-[#d946ef]">A</span></div>
+          <div className="flex justify-center gap-1"><span className="text-[#d97706]">sin⁻¹</span><span className="text-[#d946ef]">B</span></div>
+          <div className="flex justify-center gap-1"><span className="text-[#d97706]">cos⁻¹</span><span className="text-[#d946ef]">C</span></div>
+          <div className="flex justify-center gap-1"><span className="text-[#d97706]">tan⁻¹</span><span className="text-[#d946ef]">D</span></div>
+          <div className="flex justify-center gap-1"><span className="text-[#d97706]">10ˣ</span><span className="text-[#d946ef]">E</span></div>
+          <div className="flex justify-center gap-1"><span className="text-[#d97706]">eˣ</span><span className="text-[#d946ef]">F</span></div>
+        </div>
+        <div className="grid grid-cols-6 gap-2">
+          <CalcKey main="x⁻¹" type="fn" mainSize="xs" onPress={insertFn('^(-1)')} />
+          <CalcKey main="sin" type="fn" mainSize="xs" onPress={insertFn('sin(')} />
+          <CalcKey main="cos" type="fn" mainSize="xs" onPress={insertFn('cos(')} />
+          <CalcKey main="tan" type="fn" mainSize="xs" onPress={insertFn('tan(')} />
+          <CalcKey main="log" type="fn" mainSize="xs" onPress={insertFn('log(')} />
+          <CalcKey main="In" type="fn" mainSize="xs" onPress={insertFn('ln(')} />
+        </div>
+      </div>
 
-      {/* ── ROW 6: Number row 7–8–9 + Operators ── */}
-      {row(<>
-        <CalcKey main="7" type="num" shift="[" alpha="U" />
-        <CalcKey main="8" type="num" shift="]" alpha="V" />
-        <CalcKey main="9" type="num" shift="{" alpha="W" />
-        <CalcKey main="DEL" type="del" mainSize="xs" onPress={delKey} />
-        <CalcKey main="Ans" type="fn" shift="PreAns" mainSize="xs"
-          onPress={store.shiftState === 'shift' ? preAnsKey : ansKey} />
-      </>)}
+      {/* ── SECTION 4: FRACTIONS & MODIFIERS ── */}
+      <div className="flex flex-col gap-0.5 text-[8px]">
+        <div className="grid grid-cols-8 gap-1 text-center text-[6px] font-mono leading-none">
+          <div><span className="text-[#d97706]">QR</span></div>
+          <div><span className="text-[#d946ef]">SOLVE</span></div>
+          <div className="text-gray-500">■/□</div>
+          <div><span className="text-[#d97706]">x²</span></div>
+          <div><span className="text-[#d97706]">ʸ√</span></div>
+          <div className="text-gray-500">a⇔b</div>
+          <div><span className="text-[#d97706]">[</span><span className="text-[#d946ef]">y</span></div>
+          <div><span className="text-[#d97706]">]</span><span className="text-[#d946ef]">z</span></div>
+        </div>
+        <div className="grid grid-cols-8 gap-1">
+          <CalcKey main="OPTN" type="fn" mainSize="xs" onPress={openMenu('format')} />
+          <CalcKey main="CALC" type="fn" mainSize="xs" onPress={executeCalc} />
+          <CalcKey main="a/b" type="fn" mainSize="xs" onPress={insertStr('/')} />
+          <CalcKey main="√" type="fn" mainSize="xs" onPress={insertFn('sqrt(')} />
+          <CalcKey main="xʸ" type="fn" mainSize="xs" onPress={insertStr('^')} />
+          <CalcKey main="S⇔D" type="fn" mainSize="xs" onPress={() => {}} />
+          <CalcKey main="(" type="fn" mainSize="xs" onPress={insertStr('(')} />
+          <CalcKey main=")" type="fn" mainSize="xs" onPress={insertStr(')')} />
+        </div>
+      </div>
 
-      {/* ── ROW 7: Number row 4–5–6 + Operators ── */}
-      {row(<>
-        <CalcKey main="4" type="num" shift=";" alpha="X" />
-        <CalcKey main="5" type="num" shift="'" alpha="Y" />
-        <CalcKey main="6" type="num" shift='"' alpha="Z" />
-        <CalcKey main="×" type="op" onPress={insertStr('*')} />
-        <CalcKey main="÷" type="op" onPress={insertStr('/')} />
-      </>)}
+      {/* ── SECTION 5: NUMERICAL KEYPAD GRID ── */}
+      <div className="flex flex-col gap-1.5 mt-1">
+        {/* Row 1 Grid & Labels */}
+        <div className="flex flex-col gap-0.5">
+          <div className="grid grid-cols-5 gap-2 text-center text-[7px] font-mono leading-none">
+            <div><span className="text-[#d97706]">CONST</span></div>
+            <div><span className="text-[#d97706]">CONV</span></div>
+            <div><span className="text-[#d97706]">RESET</span></div>
+            <div></div>
+            <div><span className="text-[#d97706]">OFF</span></div>
+          </div>
+          <div className="grid grid-cols-5 gap-2">
+            <CalcKey main="7" type="num" />
+            <CalcKey main="8" type="num" />
+            <CalcKey main="9" type="num" />
+            <CalcKey main="DEL" type="del" onPress={delKey} />
+            <CalcKey main="AC" type="del" onPress={acKey} />
+          </div>
+        </div>
 
-      {/* ── ROW 8: Number row 1–2–3 + Operators ── */}
-      {row(<>
-        <CalcKey main="1" type="num" shift="→" alpha=":" />
-        <CalcKey main="2" type="num" shift="°" alpha=";" />
-        <CalcKey main="3" type="num" shift="∠" alpha="=" />
-        <CalcKey main="+" type="op" />
-        <CalcKey main="−" type="op" onPress={insertStr('-')} />
-      </>)}
+        {/* Row 2 Grid & Labels */}
+        <div className="flex flex-col gap-0.5">
+          <div className="grid grid-cols-5 gap-2 text-center text-[7px] font-mono leading-none">
+            <div><span className="text-[#d97706]">nPr</span></div>
+            <div><span className="text-[#d97706]">nCr</span></div>
+            <div><span className="text-[#d97706]">Rec</span></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div className="grid grid-cols-5 gap-2">
+            <CalcKey main="4" type="num" />
+            <CalcKey main="5" type="num" />
+            <CalcKey main="6" type="num" />
+            <CalcKey main="×" type="op" onPress={insertStr('*')} />
+            <CalcKey main="÷" type="op" onPress={insertStr('/')} />
+          </div>
+        </div>
 
-      {/* ── ROW 9: 0 / . / EXP / EXE ── */}
-      {row(<>
-        <CalcKey main="0" type="num" shift="∞" alpha=" " />
-        <CalcKey main="." type="num" shift="," />
-        <CalcKey main="×10^" type="fn" mainSize="xs" onPress={insertFn('*10^(')} />
-        <CalcKey main="(" type="op" shift="[" />
-        <CalcKey main=")" type="op" shift="]" />
-        <CalcKey main="EXE" type="exe" mainSize="xs" tall onPress={executeCalc} wide />
-      </>)}
+        {/* Row 3 Grid & Labels */}
+        <div className="flex flex-col gap-0.5">
+          <div className="grid grid-cols-5 gap-2 text-center text-[7px] font-mono leading-none">
+            <div><span className="text-[#d97706]">Pol</span></div>
+            <div><span className="text-[#d97706]">° ' "</span></div>
+            <div><span className="text-[#d97706]">∠</span></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div className="grid grid-cols-5 gap-2">
+            <CalcKey main="1" type="num" />
+            <CalcKey main="2" type="num" />
+            <CalcKey main="3" type="num" />
+            <CalcKey main="+" type="op" onPress={insertStr('+')} />
+            <CalcKey main="−" type="op" onPress={insertStr('-')} />
+          </div>
+        </div>
+
+        {/* Row 4 Grid & Labels */}
+        <div className="flex flex-col gap-0.5">
+          <div className="grid grid-cols-5 gap-2 text-center text-[7px] font-mono leading-none">
+            <div><span className="text-[#d97706]">Rnd</span></div>
+            <div><span className="text-[#d97706]">Ran#</span></div>
+            <div className="flex justify-center gap-1"><span className="text-[#d97706]">π</span><span className="text-[#d946ef]">e</span></div>
+            <div><span className="text-[#d97706]">PreAns</span></div>
+            <div></div>
+          </div>
+          <div className="grid grid-cols-5 gap-2">
+            <CalcKey main="0" type="num" />
+            <CalcKey main="." type="num" />
+            <CalcKey main="×10ˣ" type="num" onPress={insertFn('*10^(')} />
+            <CalcKey main="Ans" type="num" onPress={ansKey} />
+            <CalcKey main="=" type="exe" onPress={executeCalc} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

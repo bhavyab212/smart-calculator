@@ -144,96 +144,68 @@ export function GuidePanel() {
   const activeHelp = APP_HELP_MAP[activeApp] || APP_HELP_MAP.calculate;
 
   return (
-    <div className="w-full max-w-[400px] h-[640px] bg-surface-container-low/40 backdrop-blur-xl border border-outline-variant/30 rounded-3xl p-6 shadow-2xl overflow-y-auto flex flex-col gap-6 text-on-background select-none">
+    <div className="w-full h-full max-h-[800px] glass-panel rounded-xl flex flex-col text-[#d7e3fa] select-none border border-[rgba(0,242,255,0.15)] overflow-hidden shadow-2xl">
       {/* Header */}
-      <div className="border-b border-outline-variant/30 pb-4">
-        <h2 className="font-display-input text-[22px] font-bold text-primary-fixed tracking-tight flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary-fixed">menu_book</span>
-          Calculator Guide
+      <div className="px-5 py-4 border-b border-[#3a494b] bg-gradient-to-r from-[rgba(0,242,255,0.05)] to-transparent">
+        <h2 className="font-sans text-[20px] font-bold text-[#00f2ff] tracking-wide flex items-center gap-2">
+          <span className="material-symbols-outlined text-[#00f2ff]">menu_book</span>
+          Astra Guide
         </h2>
-        <p className="text-xs text-on-surface-variant mt-1">Interactive User Manual & Monitor</p>
+        <p className="text-xs text-[#b9cacb] mt-1">Interactive User Manual</p>
       </div>
 
-      {/* App Instructions */}
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-primary-fixed-dim font-bold font-display-result text-[16px]">
-          <span className="material-symbols-outlined text-[18px]">info</span>
-          {activeHelp.title}
+      <div className="flex-1 overflow-y-auto p-5 space-y-6">
+        {/* App Instructions */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-[#00f2ff] font-bold text-[15px] uppercase tracking-wider">
+            <span className="material-symbols-outlined text-[18px]">info</span>
+            {activeHelp.title}
+          </div>
+          <p className="text-[13px] text-[#d7e3fa] opacity-80 leading-relaxed font-sans">
+            {activeHelp.description}
+          </p>
+          <ul className="flex flex-col gap-2 pl-4 list-disc text-[12px] text-[#b9cacb] leading-relaxed font-sans">
+            {activeHelp.steps.map((step, idx) => (
+              <li key={idx}>{step}</li>
+            ))}
+          </ul>
         </div>
-        <p className="text-xs text-on-background opacity-80 leading-relaxed">
-          {activeHelp.description}
-        </p>
-        <ul className="flex flex-col gap-2 pl-4 list-disc text-[11px] text-on-surface-variant leading-relaxed">
-          {activeHelp.steps.map((step, idx) => (
-            <li key={idx}>{step}</li>
-          ))}
-        </ul>
-      </div>
 
-      {/* Active Variables & Memory */}
-      <div className="flex flex-col gap-3 border-t border-outline-variant/20 pt-4">
-        <div className="flex items-center gap-2 text-primary-fixed-dim font-bold font-display-result text-[16px]">
-          <span className="material-symbols-outlined text-[18px]">database</span>
-          Memory & Variables
-        </div>
-        <div className="grid grid-cols-4 gap-2 text-center">
-          {Object.entries(variables).map(([name, val]) => (
-            <div key={name} className="bg-surface-container-high/40 rounded-lg p-2 border border-outline-variant/25">
-              <div className="text-[10px] text-primary-fixed font-bold">{name}</div>
-              <div className="text-[11px] font-mono text-white mt-0.5 truncate" title={String(val)}>
-                {typeof val === 'number' ? Number(val.toFixed(6)) : val}
-              </div>
+        {/* Keyboard Shortcuts */}
+        <div className="flex flex-col gap-3 border-t border-[#3a494b] pt-5">
+          <div className="flex items-center gap-2 text-[#bc13fe] font-bold text-[15px] uppercase tracking-wider">
+            <span className="material-symbols-outlined text-[18px]">keyboard</span>
+            Keyboard Shortcuts
+          </div>
+          <div className="flex flex-col gap-2 text-[12px] text-[#b9cacb]">
+            <div className="flex justify-between border-b border-[#3a494b]/30 pb-1.5">
+              <span>Numbers & Operators</span>
+              <span className="font-mono text-[#e1fdff] bg-[rgba(0,242,255,0.05)] px-1.5 rounded">0-9, +, -, *, /</span>
             </div>
-          ))}
-          <div className="bg-surface-container-high/40 rounded-lg p-2 border border-outline-variant/25 col-span-2">
-            <div className="text-[10px] text-[#bf00ff] font-bold">Ans</div>
-            <div className="text-[11px] font-mono text-white mt-0.5 truncate" title={String(ans)}>
-              {Number(ans.toFixed(6))}
+            <div className="flex justify-between border-b border-[#3a494b]/30 pb-1.5">
+              <span>Calculate/Execute</span>
+              <span className="font-mono text-[#e1fdff] bg-[rgba(0,242,255,0.05)] px-1.5 rounded">Enter</span>
             </div>
-          </div>
-          <div className="bg-surface-container-high/40 rounded-lg p-2 border border-outline-variant/25 col-span-2">
-            <div className="text-[10px] text-[#4fdbc8] font-bold">PreAns</div>
-            <div className="text-[11px] font-mono text-white mt-0.5 truncate" title={String(preAns)}>
-              {Number(preAns.toFixed(6))}
+            <div className="flex justify-between border-b border-[#3a494b]/30 pb-1.5">
+              <span>Delete Digit</span>
+              <span className="font-mono text-[#e1fdff] bg-[rgba(0,242,255,0.05)] px-1.5 rounded">Backspace</span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Keyboard Shortcuts */}
-      <div className="flex flex-col gap-3 border-t border-outline-variant/20 pt-4">
-        <div className="flex items-center gap-2 text-primary-fixed-dim font-bold font-display-result text-[16px]">
-          <span className="material-symbols-outlined text-[18px]">keyboard</span>
-          Keyboard Shortcuts
-        </div>
-        <div className="flex flex-col gap-1.5 text-[11px] text-on-surface-variant">
-          <div className="flex justify-between border-b border-outline-variant/10 pb-1">
-            <span>Numbers & Operators</span>
-            <span className="font-mono text-white">0-9, +, -, *, /</span>
-          </div>
-          <div className="flex justify-between border-b border-outline-variant/10 pb-1">
-            <span>Calculate/Execute</span>
-            <span className="font-mono text-white">Enter</span>
-          </div>
-          <div className="flex justify-between border-b border-outline-variant/10 pb-1">
-            <span>Delete Digit</span>
-            <span className="font-mono text-white">Backspace</span>
-          </div>
-          <div className="flex justify-between border-b border-outline-variant/10 pb-1">
-            <span>Clear / AC</span>
-            <span className="font-mono text-white">Escape</span>
-          </div>
-          <div className="flex justify-between border-b border-outline-variant/10 pb-1">
-            <span>SHIFT / ALPHA Toggle</span>
-            <span className="font-mono text-white">s / a</span>
-          </div>
-          <div className="flex justify-between border-b border-outline-variant/10 pb-1">
-            <span>Trigonometry (sin, cos, tan)</span>
-            <span className="font-mono text-white">d, f, g</span>
-          </div>
-          <div className="flex justify-between pb-1">
-            <span>Logarithm (log, ln, sqrt)</span>
-            <span className="font-mono text-white">l, n, r</span>
+            <div className="flex justify-between border-b border-[#3a494b]/30 pb-1.5">
+              <span>Clear / AC</span>
+              <span className="font-mono text-[#e1fdff] bg-[rgba(0,242,255,0.05)] px-1.5 rounded">Escape</span>
+            </div>
+            <div className="flex justify-between border-b border-[#3a494b]/30 pb-1.5">
+              <span>SHIFT / ALPHA Toggle</span>
+              <span className="font-mono text-[#bc13fe] bg-[rgba(188,19,254,0.05)] px-1.5 rounded">s / a</span>
+            </div>
+            <div className="flex justify-between border-b border-[#3a494b]/30 pb-1.5">
+              <span>Trig (sin, cos, tan)</span>
+              <span className="font-mono text-[#e1fdff] bg-[rgba(0,242,255,0.05)] px-1.5 rounded">d, f, g</span>
+            </div>
+            <div className="flex justify-between pb-1.5">
+              <span>Log (log, ln, sqrt)</span>
+              <span className="font-mono text-[#e1fdff] bg-[rgba(0,242,255,0.05)] px-1.5 rounded">l, n, r</span>
+            </div>
           </div>
         </div>
       </div>

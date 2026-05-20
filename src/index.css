@@ -7,37 +7,61 @@
 
 @layer utilities {
   .lcd-glow {
-    text-shadow: 0 0 8px rgba(0, 219, 231, 0.5), 0 0 16px rgba(0, 219, 231, 0.2);
+    text-shadow: 0 0 8px rgba(0, 242, 255, 0.5), 0 0 16px rgba(0, 242, 255, 0.2);
   }
   .btn-glass {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 
-      inset 0 1px 1px rgba(255, 255, 255, 0.08),
-      0 4px 6px -1px rgba(0, 0, 0, 0.5),
-      0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    background: rgba(10, 10, 20, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-image: linear-gradient(to bottom right, rgba(255,255,255,0.1), rgba(0,0,0,0)) 1;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .btn-glass:hover {
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 
-      inset 0 1px 1px rgba(255, 255, 255, 0.12),
-      0 8px 12px -3px rgba(0, 0, 0, 0.6),
-      0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    border-color: rgba(0, 242, 255, 0.3);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.15);
   }
   .btn-glass:active {
     transform: scale(0.96) translateY(1px);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+    background: rgba(0, 242, 255, 0.1);
+  }
+  .glass-panel {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(10, 10, 20, 0.5);
+    border: 1px solid;
+    border-image: linear-gradient(to bottom right, rgba(0,242,255,0.15), rgba(0,0,0,0)) 1;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 }
 
 @layer base {
   :root {
-    --lcd-bg: #0d1415;
-    --lcd-text: #74f5ff;
-    --lcd-dim: #009aa6;
-    --calc-body: #0e0e0e;
+    /* Exact Casio fx-991CW Mockup Workstation Colors */
+    --color-background: #0b0f17;
+    --color-panel-bg: #0f141f;
+    --color-sidebar-bg: #0a0d14;
+    --color-border: #1d2535;
+    
+    --color-active-blue: #0088cc;
+    --color-text-bright: #ffffff;
+    --color-text-normal: #a5b4fc;
+    --color-text-muted: #64748b;
+    
+    --color-shift: #d97706; /* gold */
+    --color-alpha: #d946ef; /* pink */
+    
+    /* LCD screen setup (exact fx-991CW high-contrast matte) */
+    --lcd-bg: #b5c4b1;
+    --lcd-text: #121c12;
+    --lcd-dim: #4b5e4d;
+  }
+
+  /* Dark mode LCD settings as default or toggle override */
+  .dark-lcd {
+    --lcd-bg: #121c16;
+    --lcd-text: #00f2ff;
+    --lcd-dim: #008ba3;
   }
 
   * {
@@ -47,8 +71,10 @@
   }
 
   body {
-    @apply bg-[#07090e] min-h-screen font-sans;
-    background: radial-gradient(ellipse at 50% 0%, #0d1525 0%, #050608 80%);
+    @apply min-h-screen;
+    background-color: var(--color-background);
+    color: var(--color-text-normal);
+    font-family: 'Inter', sans-serif;
   }
 }
 

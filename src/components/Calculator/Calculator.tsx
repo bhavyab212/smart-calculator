@@ -59,39 +59,38 @@ export function Calculator() {
   const { activeMenu } = useCalcStore();
 
   return (
-    <div className="w-full max-w-[480px] mx-auto bg-surface-container-lowest border border-outline-variant/30 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+    <div className="w-full max-w-[480px] mx-auto bg-[#171c24] rounded-2xl p-6 shadow-2xl relative overflow-hidden border border-[#2e3745]">
       {/* Subtle Hardware Texture Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-surface-container-high/20 to-transparent pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.02)_0%,_transparent_60%)] pointer-events-none"></div>
       
       {/* Top App Bar (Re-imagined as Hardware Branding/Status) */}
-      <div className="flex justify-between items-center mb-6 relative z-10 border-b border-outline-variant/30 pb-2">
-        <div className="font-display-input text-[24px] font-bold text-primary-fixed tracking-tighter">CASIO</div>
+      <div className="flex justify-between items-center mb-4 relative z-10 border-b border-[#2e3745] pb-2 select-none font-sans">
+        <div className="flex flex-col">
+          <div className="text-white text-[14px] font-extrabold tracking-widest leading-none">CASIO</div>
+          <span className="text-[6px] text-gray-500 font-bold tracking-widest uppercase mt-0.5">CLASSWIZ</span>
+        </div>
         <div className="flex items-center gap-4">
-          <span className="font-label-status text-label-status uppercase tracking-widest text-primary-fixed-dim">fx-991CW</span>
-          <div className="flex gap-2">
-            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">settings</span>
-            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">info</span>
-          </div>
+          <span className="font-mono text-xs uppercase tracking-wider text-gray-400 font-semibold">fx-991CW</span>
         </div>
       </div>
 
       {/* LCD Panel */}
-      <div className="lcd-screen bg-gradient-to-b from-[#1a2e30] to-[#0d1415] rounded-xl border border-[#3a494b]/50 p-display-padding mb-6 relative shadow-inner overflow-hidden flex flex-col min-h-[220px]">
+      <div className="lcd-screen bg-[var(--lcd-bg)] rounded-lg border border-[#2e3745] p-3 mb-4 relative shadow-[inset_0_2px_8px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col min-h-[190px]">
         {/* Grid Pattern */}
-        <div className="absolute inset-0 bg-lcd-grid" style={{ backgroundSize: '4px 4px' }}></div>
+        <div className="absolute inset-0 bg-lcd-grid" style={{ backgroundSize: '4px 4px', opacity: 0.1 }}></div>
         
         {/* Status Indicators */}
-        <div className="relative z-10 w-full mb-2">
+        <div className="relative z-10 w-full mb-1">
           <StatusBar />
         </div>
         
         {/* App-specific content inside LCD */}
-        <div className="relative z-10 flex-1 w-full text-primary-fixed">
+        <div className="relative z-10 flex-1 w-full text-[var(--lcd-text)]">
           <ActiveApp />
         </div>
         
         {/* Expression + Result display */}
-        <div className="relative z-10 w-full mt-2">
+        <div className="relative z-10 w-full mt-1">
           <Display />
         </div>
       </div>
@@ -102,9 +101,9 @@ export function Calculator() {
       </div>
 
       {/* Bottom label strip */}
-      <div className="relative z-10 text-center pt-4 pb-1">
-        <span className="text-outline-variant text-[10px] font-display-input tracking-widest">
-          NATURAL-VPAM • CLASSWIZ
+      <div className="relative z-10 text-center pt-2 pb-0">
+        <span className="text-gray-600 text-[8px] font-mono tracking-widest uppercase">
+          Natural-V.P.A.M.
         </span>
       </div>
 
