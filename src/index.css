@@ -1,0 +1,252 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --lcd-bg: #1a2e0a;
+    --lcd-text: #c8f090;
+    --lcd-dim: #7aaa40;
+    --calc-body: #1e1e2e;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  body {
+    @apply bg-gray-950 min-h-screen font-sans;
+    background: radial-gradient(ellipse at 50% 0%, #1a1a3e 0%, #0a0a0f 70%);
+  }
+}
+
+@layer components {
+  /* ── LCD Display ── */
+  .lcd-screen {
+    background: var(--lcd-bg);
+    color: var(--lcd-text);
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: inset 0 2px 12px rgba(0,0,0,0.8), 0 0 30px rgba(100,200,50,0.08);
+    border: 1px solid #2a4a10;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lcd-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .lcd-text-primary {
+    color: var(--lcd-text);
+    text-shadow: 0 0 8px rgba(200, 240, 144, 0.4);
+  }
+
+  .lcd-text-dim {
+    color: var(--lcd-dim);
+  }
+
+  /* ── Calculator Body ── */
+  .calc-body {
+    background: linear-gradient(180deg, #252535 0%, #1a1a28 100%);
+    border-radius: 16px;
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.8),
+      0 0 0 1px rgba(255,255,255,0.05),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  /* ── Keys ── */
+  .calc-key {
+    @apply relative flex flex-col items-center justify-center;
+    @apply rounded-lg cursor-pointer select-none;
+    @apply transition-all duration-75;
+    box-shadow:
+      0 4px 0 rgba(0,0,0,0.5),
+      0 5px 6px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+
+  .calc-key:active,
+  .calc-key.pressed {
+    transform: translateY(2px);
+    box-shadow:
+      0 2px 0 rgba(0,0,0,0.5),
+      0 2px 3px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(0,0,0,0.2);
+  }
+
+  .calc-key:hover {
+    filter: brightness(1.15);
+  }
+
+  /* Key types */
+  .key-num    { background: linear-gradient(180deg, #3a3a4e 0%, #2a2a3e 100%); }
+  .key-op     { background: linear-gradient(180deg, #1e4a7f 0%, #163a6f 100%); }
+  .key-fn     { background: linear-gradient(180deg, #2e1a4e 0%, #221236 100%); }
+  .key-shift  { background: linear-gradient(180deg, #dd7700 0%, #bb5500 100%); }
+  .key-alpha  { background: linear-gradient(180deg, #6a2aaa 0%, #4a1a7a 100%); }
+  .key-exe    { background: linear-gradient(180deg, #1a6faf 0%, #0a4f8f 100%); }
+  .key-system { background: linear-gradient(180deg, #2a3a2a 0%, #1a2a1a 100%); }
+  .key-del    { background: linear-gradient(180deg, #5a2a1a 0%, #3a1a0a 100%); }
+
+  /* Key labels */
+  .key-label-main  { @apply font-mono font-bold text-white leading-none; }
+  .key-label-shift { @apply font-mono font-medium text-amber-400 leading-none; }
+  .key-label-alpha { @apply font-mono font-medium text-purple-300 leading-none; }
+
+  /* ── Status Bar ── */
+  .status-indicator {
+    @apply text-xs px-1 rounded;
+    background: rgba(200, 240, 144, 0.15);
+    color: var(--lcd-text);
+    border: 1px solid rgba(200, 240, 144, 0.2);
+  }
+
+  .status-indicator.active {
+    background: rgba(200, 240, 144, 0.3);
+    color: var(--lcd-text);
+  }
+
+  /* ── Cursor ── */
+  .cursor-block {
+    @apply inline-block w-[2px] h-[1em] ml-[1px];
+    background: var(--lcd-text);
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+  }
+
+  /* ── Menu Overlay ── */
+  .menu-overlay {
+    @apply absolute inset-0 z-50 flex items-end justify-center;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.15s ease-out;
+  }
+
+  .menu-panel {
+    @apply w-full rounded-t-2xl p-4;
+    background: #1e1e30;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    animation: slideUp 0.2s ease-out;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+  }
+
+  .menu-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer;
+    @apply transition-colors duration-100;
+    color: #ccc;
+  }
+
+  .menu-item:hover,
+  .menu-item.focused {
+    background: rgba(100, 200, 50, 0.15);
+    color: var(--lcd-text);
+  }
+
+  /* ── App Grid (Home Menu) ── */
+  .app-icon {
+    @apply flex flex-col items-center gap-1 p-2 rounded-xl cursor-pointer;
+    @apply transition-all duration-150;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .app-icon:hover,
+  .app-icon.focused {
+    background: rgba(100, 200, 50, 0.12);
+    border-color: rgba(100, 200, 50, 0.3);
+    transform: scale(1.05);
+  }
+
+  /* ── Data Editor (Stats/Matrix/etc) ── */
+  .data-grid {
+    @apply font-mono text-sm;
+    color: var(--lcd-text);
+  }
+
+  .data-cell {
+    @apply border border-transparent px-2 py-1 text-right min-w-[80px];
+    background: transparent;
+    outline: none;
+    color: var(--lcd-text);
+  }
+
+  .data-cell:focus {
+    border-color: var(--lcd-text);
+    background: rgba(200, 240, 144, 0.08);
+  }
+
+  .data-cell-header {
+    @apply px-2 py-1 text-center font-bold text-xs;
+    color: var(--lcd-dim);
+  }
+
+  /* ── Expression Rendering ── */
+  .expr-display {
+    @apply font-mono leading-relaxed;
+    color: var(--lcd-text);
+    font-size: clamp(14px, 2.5vw, 20px);
+    word-break: break-all;
+  }
+
+  .expr-result {
+    @apply font-mono text-right font-bold;
+    color: var(--lcd-text);
+    font-size: clamp(18px, 3vw, 26px);
+    text-shadow: 0 0 10px rgba(200, 240, 144, 0.5);
+  }
+
+  /* ── Theme Toggle ── */
+  .theme-toggle {
+    @apply fixed top-4 right-4 z-50 p-2 rounded-full;
+    @apply cursor-pointer transition-all duration-200;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(200, 240, 144, 0.2);
+    border-radius: 2px;
+  }
+}
+
+/* KaTeX display override for LCD */
+.lcd-screen .katex {
+  color: var(--lcd-text) !important;
+  font-size: 1.1em;
+}
+
+.lcd-screen .katex-display {
+  margin: 0;
+}
+
+/* Light theme overrides */
+.light .lcd-screen {
+  --lcd-bg: #dce8c8;
+  --lcd-text: #1a3a0a;
+  --lcd-dim: #4a7a20;
+}
+
+.light .calc-body {
+  background: linear-gradient(180deg, #e8e8f0 0%, #d0d0e0 100%);
+}
